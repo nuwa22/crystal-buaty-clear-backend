@@ -19,7 +19,7 @@ mongoose.connect("mongodb+srv://admin:123@cluster0.citbb.mongodb.net/?retryWrite
 )
 
 app.use(bodyParser.json());
-app.use(verifyJWT)
+app.use(verifyJWT);
 
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter)
