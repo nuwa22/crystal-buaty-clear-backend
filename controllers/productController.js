@@ -16,11 +16,12 @@ export async function createProduct(req, res){
 
     const product = new Product(req.body);
     try {
-        awaitproduct.save()
+        await product.save()
         res.json({
             message: "Product saved successfully",
         })
     }catch (err) {
+        console.log(err);
         res.status(500).json({
             message: "Product not saved"
         })
