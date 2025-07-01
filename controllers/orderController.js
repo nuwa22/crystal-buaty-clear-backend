@@ -1,6 +1,7 @@
 import Order from "../models/order.js";
+import Product from "../models/product.js";
 
-export function createOrder(req, res){
+export async function createOrder(req, res){
 
     if(req.user == null){
         res.status(401).json({
@@ -22,7 +23,7 @@ export function createOrder(req, res){
 
    Order.find().sort({
         date : -1,
-    }).limit(1).then((lastBills) => {
+    }).limit(1).then(async (lastBills) => {
         if(lastBills.length == 0){
             orderData.orderId = "ORD0001";
         }else{
@@ -40,6 +41,31 @@ export function createOrder(req, res){
             const billItem = body.billItems[i];
 
             // check if the product exists
+            const product = await Product.findOne({
+                productId : body.billItems[i].productId
+            });
+
+            if(product == null){
+                res.status(404).json({
+                    message : "Product with product id " + body.billItems[i].productId + " not found"
+                });
+                return;
+            }
+            /*
+                productId : String,
+                productName : String,
+                image : String,
+                quantity : Number,
+                price : Number
+                */
+            orderData.billItems[i] = {
+                productId : product.productId,
+                productName : product.productName,
+                image : product.images[0],
+                quantity : body.billItems[i].quantity,
+                price : product.price
+            };
+            orderData.total = orderData.total + product.price * body.billItems[i].quantity;
 
         }
     
