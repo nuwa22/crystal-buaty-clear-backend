@@ -153,3 +153,45 @@ export async function googleLogin(req,res){
         return;
     }
 }
+// get all user Admin
+export async function getUser(req, res) {
+    try {
+        // Authorization check first
+        if (!req.user || req.user.role !== "admin") {
+            return res.status(403).json({
+                message: "You are not authorized to view users"
+            });
+        }
+
+        // Fetch users with role "user"
+        const users = await User.find({ role: "user" });
+
+        if (users.length === 0) {
+            return res.status(404).json({
+                message: "No user found"
+            });
+        }
+
+        // Return the list of users
+        return res.status(200).json(users);
+        
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        return res.status(500).json({
+            message: "Internal server error",
+            error: error.message
+        });
+    }
+}
+
+export function getCurrentUser(req,res){
+    if(req.user == null){
+        res.status(403).json({
+            message: "Please login to get user details",
+        });
+        return;
+    }
+    res.json({
+        user : req.user
+    });
+}
